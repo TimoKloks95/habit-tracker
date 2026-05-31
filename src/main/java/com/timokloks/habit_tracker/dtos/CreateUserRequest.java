@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 public class CreateUserRequest {
     @NotBlank(message = "Username must be provided.")
-    public String username;
+    private String username;
     @Email
-    public String email;
+    @NotBlank(message = "Email must be provided.")
+    private String email;
 }

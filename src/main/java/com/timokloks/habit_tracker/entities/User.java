@@ -1,6 +1,9 @@
 package com.timokloks.habit_tracker.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +29,11 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
 
     @PrePersist
     public void prePersist() {
