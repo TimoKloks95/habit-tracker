@@ -4,6 +4,7 @@ import com.timokloks.habit_tracker.dtos.CreateUserRequest;
 import com.timokloks.habit_tracker.dtos.ErrorDto;
 import com.timokloks.habit_tracker.dtos.UserResponse;
 import com.timokloks.habit_tracker.exceptions.UserAlreadyExistsException;
+import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,20 @@ public class UserController {
         return ResponseEntity.created(uri).body(userDto);
     }
 
+    @GetMapping("/{id}")
+    public UserResponse getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorDto> handleUserAlreadyExists() {
         return ResponseEntity.badRequest().body(
                 new ErrorDto("User with email already exists")
         );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Void> handleUserNotFound() {
+        return ResponseEntity.notFound().build();
     }
 }

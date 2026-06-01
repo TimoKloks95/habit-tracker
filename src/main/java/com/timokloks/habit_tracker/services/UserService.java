@@ -4,6 +4,7 @@ import com.timokloks.habit_tracker.dtos.CreateUserRequest;
 import com.timokloks.habit_tracker.dtos.UserResponse;
 import com.timokloks.habit_tracker.entities.User;
 import com.timokloks.habit_tracker.exceptions.UserAlreadyExistsException;
+import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.mappers.UserMapper;
 import com.timokloks.habit_tracker.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,14 @@ public class UserService {
 
         var user = new User(request.getUsername(), request.getEmail());
         userRepository.save(user);
+        return userMapper.toDto(user);
+    }
 
+    public UserResponse getUser(Long id) {
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null) {
+            throw new UserNotFoundException();
+        }
         return userMapper.toDto(user);
     }
 }
