@@ -1,9 +1,10 @@
 package com.timokloks.habit_tracker.controllers;
 
 import com.timokloks.habit_tracker.dtos.CreateUserRequest;
-import com.timokloks.habit_tracker.dtos.UserCreatedResponse;
-import com.timokloks.habit_tracker.entities.User;
-import com.timokloks.habit_tracker.repositories.UserRepository;
+import com.timokloks.habit_tracker.dtos.ErrorDto;
+import com.timokloks.habit_tracker.dtos.UserResponse;
+import com.timokloks.habit_tracker.exceptions.UserAlreadyExistsException;
+import com.timokloks.habit_tracker.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,20 +15,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserCreatedResponse> createUser(@Valid @RequestBody CreateUserRequest request, UriComponentsBuilder uriBuilder) {
-        if(userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        var user = new User(request.getUsername(), request.getEmail());
-        userRepository.save(user);
-
-        var userDto = new UserCreatedResponse(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt());
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request, UriComponentsBuilder uriBuilder) {
+        var userDto = userService.createUser(request);
         var uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getId()).toUri();
         return ResponseEntity.created(uri).body(userDto);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorDto> handleUserAlreadyExists() {
+        return ResponseEntity.badRequest().body(
+                new ErrorDto("User with email already exists")
+        );
     }
 }
