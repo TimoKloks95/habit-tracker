@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 public class HabitController
@@ -23,6 +25,11 @@ public class HabitController
         var habitDto = habitService.createHabit(request,userId);
         var uri = uriBuilder.path("/habits/{id}").buildAndExpand(habitDto.getId()).toUri();
         return ResponseEntity.created(uri).body(habitDto);
+    }
+
+    @GetMapping("/users/{userId}/habits")
+    public List<HabitResponse> getHabitsOfUser(@PathVariable Long userId) {
+        return habitService.getHabitsOfUser(userId);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

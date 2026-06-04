@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class HabitService {
@@ -30,5 +32,17 @@ public class HabitService {
         habitRepository.save(habit);
 
         return habitMapper.toDto(habit);
+    }
+
+    public List<HabitResponse> getHabitsOfUser(Long userId) {
+        var user = userRepository.findById(userId).orElse(null);
+        if(user == null) {
+            throw new UserNotFoundException();
+        }
+
+        var habits = habitRepository.findByUser(user);
+        return habits.stream()
+                .map(habitMapper::toDto)
+                .toList();
     }
 }
