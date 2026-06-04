@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Data
 public class HabitResponse {
     private Long id;
-    private Long userId;
     private String name;
     private String description;
     private Frequency frequency;
