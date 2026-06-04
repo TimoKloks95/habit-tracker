@@ -1,7 +1,9 @@
 package com.timokloks.habit_tracker.controllers;
 
 import com.timokloks.habit_tracker.dtos.CreateHabitRequest;
+import com.timokloks.habit_tracker.dtos.ErrorDto;
 import com.timokloks.habit_tracker.dtos.HabitResponse;
+import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.services.HabitService;
 import jakarta.validation.Valid;
@@ -32,8 +34,19 @@ public class HabitController
         return habitService.getHabitsOfUser(userId);
     }
 
+    @DeleteMapping("/habits/{habitId}")
+    public ResponseEntity<Void> deleteHabit(@PathVariable Long habitId) {
+        habitService.deleteHabit(habitId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Void> handleUserNotFound() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(HabitNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleHabitNotFound() {
         return ResponseEntity.notFound().build();
     }
 }
