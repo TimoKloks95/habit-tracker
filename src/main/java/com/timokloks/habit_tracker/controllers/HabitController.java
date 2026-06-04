@@ -12,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping
 public class HabitController
 {
     private final HabitService habitService;

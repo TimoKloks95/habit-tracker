@@ -24,4 +24,9 @@ public class HabitCompletion {
     @ManyToOne
     @JoinColumn(name = "habit_id")
     private Habit habit;
+
+    @PrePersist
+    public void prePersist() {
+        this.completedAt = LocalDateTime.now();
+    }
 }
