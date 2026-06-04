@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/habits")
@@ -21,6 +23,11 @@ public class HabitCompletionController {
         var habitCompletionResponse = habitCompletionService.createHabitCompletion(habitId);
         var uri = uriBuilder.path("/completions/{id}").buildAndExpand(habitCompletionResponse.getId()).toUri();
         return ResponseEntity.created(uri).body(habitCompletionResponse);
+    }
+
+    @GetMapping("/{habitId}/completions")
+    public List<HabitCompletionResponse> getHabitCompletionsOfHabit(@PathVariable Long habitId) {
+        return habitCompletionService.getHabitCompletionsOfHabit(habitId);
     }
 
     @ExceptionHandler(HabitNotFoundException.class)

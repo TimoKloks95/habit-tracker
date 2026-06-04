@@ -9,6 +9,9 @@ import com.timokloks.habit_tracker.repositories.HabitRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class HabitCompletionService {
@@ -27,5 +30,18 @@ public class HabitCompletionService {
 
         habitCompletionRepository.save(habitCompletion);
         return habitCompletionMapper.toDto(habitCompletion);
+    }
+
+    public List<HabitCompletionResponse> getHabitCompletionsOfHabit(Long habitId) {
+        var habit = habitRepository.findById(habitId).orElse(null);
+        if (habit == null) {
+            throw new HabitNotFoundException();
+        }
+
+        var habitCompletions = habitCompletionRepository.findByHabit(habit);
+
+        return habitCompletions.stream()
+                .map(habitCompletionMapper::toDto)
+                .toList();
     }
 }
