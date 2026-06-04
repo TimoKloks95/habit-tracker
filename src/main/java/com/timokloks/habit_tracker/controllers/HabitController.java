@@ -16,7 +16,7 @@ public class HabitController
 {
     private final HabitService habitService;
 
-    @PostMapping("users/{userId}/habits")
+    @PostMapping("/users/{userId}/habits")
     public ResponseEntity<HabitResponse> createHabit(@Valid @RequestBody CreateHabitRequest request,
                                                      @PathVariable Long userId,
                                                      UriComponentsBuilder uriBuilder) {
