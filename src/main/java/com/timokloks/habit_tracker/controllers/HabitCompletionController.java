@@ -24,13 +24,16 @@ public class HabitCompletionController {
     public ResponseEntity<HabitCompletionResponse> createHabitCompletion(@PathVariable Long habitId,
                                                                          UriComponentsBuilder uriBuilder) {
         var habitCompletionResponse = habitCompletionService.createHabitCompletion(habitId);
-        var uri = uriBuilder.path("/completions/{id}").buildAndExpand(habitCompletionResponse.getId()).toUri();
+        var uri = uriBuilder
+                .path("/habits/{habitId}/completions/{completionId}")
+                .buildAndExpand(habitId, habitCompletionResponse.getId())
+                .toUri();
         return ResponseEntity.created(uri).body(habitCompletionResponse);
     }
 
     @GetMapping("/{habitId}/completions")
-    public List<HabitCompletionResponse> getHabitCompletionsOfHabit(@PathVariable Long habitId) {
-        return habitCompletionService.getHabitCompletionsOfHabit(habitId);
+    public List<HabitCompletionResponse> getHabitCompletions(@PathVariable Long habitId) {
+        return habitCompletionService.getHabitCompletions(habitId);
     }
 
     @DeleteMapping("/{habitId}/completions/{completionId}")

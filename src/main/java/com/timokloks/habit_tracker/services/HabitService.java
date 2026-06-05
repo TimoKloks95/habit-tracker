@@ -65,4 +65,12 @@ public class HabitService {
         habitRepository.save(habit);
         return habitMapper.toDto(habit);
     }
+
+    public HabitResponse getHabit(Long habitId) {
+        var habit = habitRepository.findById(habitId).orElse(null);
+        if(habit == null) {
+            throw new HabitNotFoundException();
+        }
+        return habitMapper.toDto(habit);
+    }
 }

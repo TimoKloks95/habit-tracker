@@ -35,6 +35,11 @@ public class HabitController
         return habitService.getHabitsOfUser(userId);
     }
 
+    @GetMapping("/habits/{habitId}")
+    public HabitResponse getHabit(@PathVariable Long habitId) {
+        return habitService.getHabit(habitId);
+    }
+
     @DeleteMapping("/habits/{habitId}")
     public ResponseEntity<Void> deleteHabit(@PathVariable Long habitId) {
         habitService.deleteHabit(habitId);
@@ -53,7 +58,7 @@ public class HabitController
     }
 
     @ExceptionHandler(HabitNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleHabitNotFound() {
+    public ResponseEntity<Void> handleHabitNotFound() {
         return ResponseEntity.notFound().build();
     }
 }

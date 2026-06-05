@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +32,7 @@ public class HabitCompletionService {
         return habitCompletionMapper.toDto(habitCompletion);
     }
 
-    public List<HabitCompletionResponse> getHabitCompletionsOfHabit(Long habitId) {
+    public List<HabitCompletionResponse> getHabitCompletions(Long habitId) {
         var habit = habitRepository.findById(habitId).orElse(null);
         if (habit == null) {
             throw new HabitNotFoundException();
