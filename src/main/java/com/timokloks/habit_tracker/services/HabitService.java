@@ -2,6 +2,7 @@ package com.timokloks.habit_tracker.services;
 
 import com.timokloks.habit_tracker.dtos.CreateHabitRequest;
 import com.timokloks.habit_tracker.dtos.HabitResponse;
+import com.timokloks.habit_tracker.dtos.UpdateHabitRequest;
 import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.mappers.HabitMapper;
@@ -53,5 +54,15 @@ public class HabitService {
             throw new HabitNotFoundException();
         }
         habitRepository.delete(habit);
+    }
+
+    public HabitResponse updateHabit(Long habitId, UpdateHabitRequest request) {
+        var habit = habitRepository.findById(habitId).orElse(null);
+        if(habit == null) {
+            throw new HabitNotFoundException();
+        }
+        habitMapper.update(request, habit);
+        habitRepository.save(habit);
+        return habitMapper.toDto(habit);
     }
 }
