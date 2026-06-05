@@ -2,6 +2,7 @@ package com.timokloks.habit_tracker.services;
 
 import com.timokloks.habit_tracker.dtos.HabitCompletionResponse;
 import com.timokloks.habit_tracker.entities.HabitCompletion;
+import com.timokloks.habit_tracker.exceptions.HabitCompletionNotFoundException;
 import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.mappers.HabitCompletionMapper;
 import com.timokloks.habit_tracker.repositories.HabitCompletionRepository;
@@ -43,5 +44,11 @@ public class HabitCompletionService {
         return habitCompletions.stream()
                 .map(habitCompletionMapper::toDto)
                 .toList();
+    }
+
+    public void deleteHabitCompletion(Long habitId, Long completionId) {
+        var habit = habitRepository.findById(habitId).orElseThrow(HabitNotFoundException::new);
+        var habitCompletion = habitCompletionRepository.findByHabitAndId(habit, completionId).orElseThrow(HabitCompletionNotFoundException::new);
+        habitCompletionRepository.delete(habitCompletion);
     }
 }

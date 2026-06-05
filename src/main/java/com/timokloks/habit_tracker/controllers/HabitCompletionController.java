@@ -1,9 +1,12 @@
 package com.timokloks.habit_tracker.controllers;
 
+import com.timokloks.habit_tracker.dtos.ErrorDto;
 import com.timokloks.habit_tracker.dtos.HabitCompletionResponse;
+import com.timokloks.habit_tracker.exceptions.HabitCompletionNotFoundException;
 import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.services.HabitCompletionService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,8 +33,23 @@ public class HabitCompletionController {
         return habitCompletionService.getHabitCompletionsOfHabit(habitId);
     }
 
+    @DeleteMapping("/{habitId}/completions/{completionId}")
+    public ResponseEntity<Void> deleteHabitCompletion(@PathVariable("habitId") Long habitId, @PathVariable("completionId") Long completionId) {
+        habitCompletionService.deleteHabitCompletion(habitId, completionId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(HabitNotFoundException.class)
-    public ResponseEntity<Void> handleHabitNotFound() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ErrorDto> handleHabitNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto("Habit not found.")
+        );
+    }
+
+    @ExceptionHandler(HabitCompletionNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleHabitCompletionNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto("Habit completion not found.")
+        );
     }
 }
