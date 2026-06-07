@@ -1,6 +1,8 @@
 package com.timokloks.habit_tracker.controllers;
 
 import com.timokloks.habit_tracker.dtos.ErrorDto;
+import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,5 +28,12 @@ public class GlobalExceptionHandler {
         var errors = new HashMap<String, String>();
         ex.getBindingResult().getFieldErrors().forEach(er -> errors.put(er.getField(), er.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(HabitNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleHabitNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto("Habit not found.")
+        );
     }
 }

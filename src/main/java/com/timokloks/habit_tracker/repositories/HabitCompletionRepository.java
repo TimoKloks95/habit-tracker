@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface HabitCompletionRepository extends JpaRepository<HabitCompletion, Long> {
     List<HabitCompletion> findByHabit(Habit habit);
     Optional<HabitCompletion> findByHabitAndId(Habit habit, Long id);
+    void deleteByHabit(Habit habit);
 }

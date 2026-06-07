@@ -36,17 +36,16 @@ public class HabitCompletionController {
         return habitCompletionService.getHabitCompletions(habitId);
     }
 
+    @DeleteMapping("/{habitId}/completions")
+    public ResponseEntity<Void> deleteHabitCompletions(@PathVariable Long habitId) {
+        habitCompletionService.deleteHabitCompletions(habitId);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{habitId}/completions/{completionId}")
     public ResponseEntity<Void> deleteHabitCompletion(@PathVariable("habitId") Long habitId, @PathVariable("completionId") Long completionId) {
         habitCompletionService.deleteHabitCompletion(habitId, completionId);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(HabitNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleHabitNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorDto("Habit not found.")
-        );
     }
 
     @ExceptionHandler(HabitCompletionNotFoundException.class)

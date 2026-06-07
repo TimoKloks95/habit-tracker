@@ -9,6 +9,7 @@ import com.timokloks.habit_tracker.repositories.HabitCompletionRepository;
 import com.timokloks.habit_tracker.repositories.HabitRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,5 +50,11 @@ public class HabitCompletionService {
         var habit = habitRepository.findById(habitId).orElseThrow(HabitNotFoundException::new);
         var habitCompletion = habitCompletionRepository.findByHabitAndId(habit, completionId).orElseThrow(HabitCompletionNotFoundException::new);
         habitCompletionRepository.delete(habitCompletion);
+    }
+
+    @Transactional
+    public void deleteHabitCompletions(Long habitId) {
+        var habit = habitRepository.findById(habitId).orElseThrow(HabitNotFoundException::new);
+        habitCompletionRepository.deleteByHabit(habit);
     }
 }

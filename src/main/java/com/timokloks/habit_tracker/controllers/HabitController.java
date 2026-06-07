@@ -56,9 +56,4 @@ public class HabitController
     public ResponseEntity<Void> handleUserNotFound() {
         return ResponseEntity.notFound().build();
     }
-
-    @ExceptionHandler(HabitNotFoundException.class)
-    public ResponseEntity<Void> handleHabitNotFound() {
-        return ResponseEntity.notFound().build();
-    }
 }
