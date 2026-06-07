@@ -1,9 +1,6 @@
 package com.timokloks.habit_tracker.controllers;
 
-import com.timokloks.habit_tracker.dtos.CreateHabitRequest;
-import com.timokloks.habit_tracker.dtos.ErrorDto;
-import com.timokloks.habit_tracker.dtos.HabitResponse;
-import com.timokloks.habit_tracker.dtos.UpdateHabitRequest;
+import com.timokloks.habit_tracker.dtos.*;
 import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.services.HabitService;
@@ -50,6 +47,11 @@ public class HabitController
     public HabitResponse updateHabit(@PathVariable Long habitId,
                                      @RequestBody UpdateHabitRequest request) {
         return habitService.updateHabit(habitId, request);
+    }
+
+    @GetMapping("/habits/{habitId}/streak")
+    public StreakResponse getStreak(@PathVariable Long habitId) {
+        return habitService.getStreak(habitId);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
