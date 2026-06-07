@@ -7,6 +7,5 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HabitCompletionMapper {
-    @Mapping(source = "habit.id", target = "habitId")
     HabitCompletionResponse toDto(HabitCompletion habitCompletion);
 }
