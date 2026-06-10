@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Set;
@@ -98,10 +99,30 @@ public class HabitService {
             case WEEKLY -> {
                 return calculateWeeklyStreak(completions);
             }
+            case MONTHLY -> {
+                return calculateMonthlyStreak(completions);
+            }
             default -> {
                 return 0;
             }
         }
+    }
+
+    private int calculateMonthlyStreak(List<HabitCompletion> completions) {
+       Set<YearMonth> months = completions.stream()
+               .map(c -> YearMonth.from(c.getCompletedAt()))
+               .collect(Collectors.toSet());
+
+        YearMonth current = YearMonth.from(LocalDate.now());
+
+        int streak = 0;
+
+        while(months.contains(current)) {
+            streak++;
+            current = current.minusMonths(1);
+        }
+
+        return streak;
     }
 
     private int calculateWeeklyStreak(List<HabitCompletion> completions) {
