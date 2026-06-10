@@ -1,9 +1,8 @@
 package com.timokloks.habit_tracker.services;
 
-import com.timokloks.habit_tracker.dtos.CreateHabitRequest;
-import com.timokloks.habit_tracker.dtos.HabitResponse;
-import com.timokloks.habit_tracker.dtos.StreakResponse;
-import com.timokloks.habit_tracker.dtos.UpdateHabitRequest;
+import com.timokloks.habit_tracker.dtos.*;
+import com.timokloks.habit_tracker.entities.Frequency;
+import com.timokloks.habit_tracker.entities.HabitCompletion;
 import com.timokloks.habit_tracker.exceptions.HabitNotFoundException;
 import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.mappers.HabitMapper;
@@ -11,13 +10,12 @@ import com.timokloks.habit_tracker.repositories.HabitCompletionRepository;
 import com.timokloks.habit_tracker.repositories.HabitRepository;
 import com.timokloks.habit_tracker.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,6 +85,59 @@ public class HabitService {
             throw new HabitNotFoundException();
         }
         var completions = habitCompletionRepository.findByHabit(habit);
+
+        int streak = calculateStreak(completions, habit.getFrequency());
+        return new StreakResponse(streak);
+    }
+
+    private int calculateStreak(List<HabitCompletion> completions, Frequency frequency) {
+        switch(frequency) {
+            case DAILY -> {
+                return calculateDailyStreak(completions);
+            }
+            case WEEKLY -> {
+                return calculateWeeklyStreak(completions);
+            }
+            default -> {
+                return 0;
+            }
+        }
+    }
+
+    private int calculateWeeklyStreak(List<HabitCompletion> completions) {
+        WeekFields wf = WeekFields.ISO;
+
+        Set<WeekKey> weeks = completions.stream()
+                .map(c -> c.getCompletedAt().toLocalDate())
+                .map(date -> new WeekKey(
+                        date.get(wf.weekBasedYear()),
+                        date.get(wf.weekOfWeekBasedYear())
+                ))
+                .collect(Collectors.toSet());
+
+        LocalDate current = LocalDate.now();
+
+        WeekKey currentWeek = new WeekKey(
+                current.get(wf.weekBasedYear()),
+                current.get(wf.weekOfWeekBasedYear())
+        );
+
+        int streak = 0;
+
+        while(weeks.contains(currentWeek)) {
+            streak++;
+            current = current.minusWeeks(1);
+
+            currentWeek = new WeekKey(
+                    current.get(wf.weekBasedYear()),
+                    current.get(wf.weekOfWeekBasedYear())
+            );
+        }
+
+        return streak;
+    }
+
+    private int calculateDailyStreak(List<HabitCompletion> completions) {
         var days = completions.stream()
                 .map(completion -> completion.getCompletedAt().toLocalDate())
                 .collect(Collectors.toSet());
@@ -98,6 +149,6 @@ public class HabitService {
             streak++;
             date = date.minusDays(1);
         }
-        return new StreakResponse(streak);
+        return streak;
     }
 }
