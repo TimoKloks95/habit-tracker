@@ -81,8 +81,10 @@ public class HabitService {
         }
         var completions = habitCompletionRepository.findByHabit(habit);
 
-        int streak = streakEngine.calculateCurrentStreak(completions, habit.getFrequency());
-        return new StreakResponse(streak);
+        int currentStreak = streakEngine.calculateCurrentStreak(completions, habit.getFrequency());
+        int longestStreak = streakEngine.calculateLongestStreak(completions, habit.getFrequency());
+
+        return new StreakResponse(currentStreak, longestStreak);
     }
 
 

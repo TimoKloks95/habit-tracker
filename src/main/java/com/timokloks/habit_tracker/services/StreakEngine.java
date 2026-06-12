@@ -10,6 +10,7 @@ import java.time.YearMonth;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,6 +21,54 @@ public class StreakEngine {
             case WEEKLY -> calculateCurrentWeeklyStreak(completions);
             case MONTHLY -> calculateCurrentMonthlyStreak(completions);
         };
+    }
+
+    public int calculateLongestStreak(List<HabitCompletion> completions, Frequency frequency) {
+        return switch(frequency) {
+            case DAILY -> calculateLongestDailyStreak(completions);
+            case WEEKLY -> calculateLongestWeeklyStreak(completions);
+            case MONTHLY -> calculateLongestMonthlyStreak(completions);
+        };
+    }
+
+    private int calculateLongestMonthlyStreak(List<HabitCompletion> completions) {
+        return 0;
+    }
+
+    private int calculateLongestWeeklyStreak(List<HabitCompletion> completions) {
+        return 0;
+    }
+
+    private int calculateLongestDailyStreak(List<HabitCompletion> completions) {
+        var days = completions.stream()
+                .map(completion -> completion.getCompletedAt().toLocalDate())
+                .collect(Collectors.toSet());
+
+        if(days.isEmpty()) return 0;
+
+        LocalDate current = days.stream()
+                .min(LocalDate::compareTo)
+                .orElseThrow();
+
+        int currentStreak = 0;
+        int longestStreak = 0;
+
+        LocalDate end = days.stream()
+                .max(LocalDate::compareTo)
+                .orElseThrow();
+
+        while(!current.isAfter(end)) {
+            if(days.contains(current)) {
+                currentStreak++;
+                longestStreak = Math.max(longestStreak, currentStreak);
+            } else {
+                currentStreak = 0;
+            }
+
+            current = current.plusDays(1);
+        }
+
+        return longestStreak;
     }
 
     private int calculateCurrentMonthlyStreak(List<HabitCompletion> completions) {
