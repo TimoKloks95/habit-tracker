@@ -11,6 +11,7 @@ import java.time.temporal.WeekFields;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,65 +26,36 @@ public class StreakEngine {
 
     public int calculateLongestStreak(List<HabitCompletion> completions, Frequency frequency) {
         return switch(frequency) {
-            case DAILY -> calculateLongestDailyStreak(completions);
-            case WEEKLY -> calculateLongestWeeklyStreak(completions);
-            case MONTHLY -> calculateLongestMonthlyStreak(completions);
+            case DAILY -> getLongestStreak(getDaysList(completions), this::isNextDay);
+            case WEEKLY -> getLongestStreak(getWeeksList(completions), this::isNextWeek);
+            case MONTHLY -> getLongestStreak(getMonthsList(completions), this::isNextMonth);
         };
     }
 
-    private int calculateLongestMonthlyStreak(List<HabitCompletion> completions) {
-        var months = completions.stream()
-                .map(c -> YearMonth.from(c.getCompletedAt()))
+    private List<LocalDate> getDaysList(List<HabitCompletion> completions) {
+        return completions.stream()
+                .map(c -> c.getCompletedAt().toLocalDate())
                 .distinct()
                 .sorted()
                 .toList();
-
-        if (months.isEmpty()) return 0;
-
-        int longest = 1;
-        int current = 1;
-
-        for (int i = 1; i < months.size(); i++) {
-            YearMonth previous = months.get(i - 1);
-            YearMonth today = months.get(i);
-
-            if (previous.plusMonths(1).equals(today)) {
-                current++;
-                longest = Math.max(longest, current);
-            } else {
-                current = 1;
-            }
-        }
-        return longest;
     }
 
-    private int calculateLongestWeeklyStreak(List<HabitCompletion> completions) {
-        var weeks = completions.stream()
+    private List<WeekKey> getWeeksList(List<HabitCompletion> completions) {
+        return completions.stream()
                 .map(c -> createWeekKey(c.getCompletedAt().toLocalDate()))
                 .distinct()
                 .sorted(Comparator
                         .comparingInt(WeekKey::year)
                         .thenComparingInt(WeekKey::week))
                 .toList();
+    }
 
-        if (weeks.isEmpty()) return 0;
-
-        int longest = 1;
-        int current = 1;
-
-        for (int i = 1; i < weeks.size(); i++) {
-            WeekKey previous = weeks.get(i - 1);
-            WeekKey today = weeks.get(i);
-
-            if (isNextWeek(previous, today)) {
-                current++;
-                longest = Math.max(longest, current);
-            } else {
-                current = 1;
-            }
-        }
-
-        return longest;
+    private List<YearMonth> getMonthsList(List<HabitCompletion> completions) {
+        return completions.stream()
+                .map(c -> YearMonth.from(c.getCompletedAt()))
+                .distinct()
+                .sorted()
+                .toList();
     }
 
     private boolean isNextWeek(WeekKey previous, WeekKey current) {
@@ -103,23 +75,25 @@ public class StreakEngine {
         return expected.equals(current);
     }
 
-    private int calculateLongestDailyStreak(List<HabitCompletion> completions) {
-        var days = completions.stream()
-                .map(c -> c.getCompletedAt().toLocalDate())
-                .distinct()
-                .sorted()
-                .toList();
+    private boolean isNextDay(LocalDate previous, LocalDate current) {
+        return previous.plusDays(1).equals(current);
+    }
 
-        if(days.isEmpty()) return 0;
+    private boolean isNextMonth(YearMonth previous, YearMonth current) {
+        return previous.plusMonths(1).equals(current);
+    }
+
+    private <T> int getLongestStreak(List<T> completions, BiPredicate<T, T> isNext) {
+        if(completions.isEmpty()) return 0;
 
         int longest = 1;
         int current = 1;
 
-        for (int i = 1; i < days.size(); i++) {
-            LocalDate previous = days.get(i - 1);
-            LocalDate today = days.get(i);
+        for (int i = 1; i < completions.size(); i++) {
+            T previous = completions.get(i - 1);
+            T today = completions.get(i);
 
-            if (previous.plusDays(1).equals(today)) {
+            if (isNext.test(previous, today)) {
                 current++;
                 longest = Math.max(longest, current);
             } else {
