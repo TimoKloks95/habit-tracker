@@ -4,6 +4,7 @@ import com.timokloks.habit_tracker.dtos.CreateHabitRequest;
 import com.timokloks.habit_tracker.dtos.HabitResponse;
 import com.timokloks.habit_tracker.entities.Habit;
 import com.timokloks.habit_tracker.entities.User;
+import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.mappers.HabitMapper;
 import com.timokloks.habit_tracker.repositories.HabitCompletionRepository;
 import com.timokloks.habit_tracker.repositories.HabitRepository;
@@ -73,11 +74,12 @@ class HabitServiceTest {
 
     @Test
     void shouldThrowWhenCreatingHabitForUnknownUser() {
-        //Arrange
+        when(userRepository.findById(1L))
+            .thenReturn(Optional.empty());
 
-        //Act
-
-        //Assert
+        assertThrows(UserNotFoundException.class, () -> {
+            habitService.createHabit(new CreateHabitRequest(), 1L);
+        });
     }
 
     // ---------------------------------------
