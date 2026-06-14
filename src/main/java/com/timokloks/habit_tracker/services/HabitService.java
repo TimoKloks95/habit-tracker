@@ -86,6 +86,4 @@ public class HabitService {
 
         return new StreakResponse(currentStreak, longestStreak);
     }
-
-
 }
