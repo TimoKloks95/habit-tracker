@@ -4,6 +4,7 @@ import com.timokloks.habit_tracker.dtos.CreateUserRequest;
 import com.timokloks.habit_tracker.dtos.UserResponse;
 import com.timokloks.habit_tracker.entities.User;
 import com.timokloks.habit_tracker.exceptions.UserAlreadyExistsException;
+import com.timokloks.habit_tracker.exceptions.UserNotFoundException;
 import com.timokloks.habit_tracker.mappers.UserMapper;
 import com.timokloks.habit_tracker.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,6 +76,29 @@ class UserServiceTest {
     // ---------------------------------------
 
     @Test
-    void getUser() {
+    void shouldGetUserWhenUserExists() {
+        Long userId = 1L;
+        User user = new User();
+        UserResponse response = new UserResponse();
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(userMapper.toDto(user))
+                .thenReturn(response);
+
+        UserResponse actual = userService.getUser(userId);
+
+        assertEquals(response, actual);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+        Long userId = 1L;
+
+        when(userRepository.findById(userId))
+            .thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.getUser(userId));
     }
 }
