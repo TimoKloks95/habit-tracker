@@ -20,7 +20,7 @@ public class HabitService {
     private final HabitMapper habitMapper;
     private final HabitRepository habitRepository;
     private final HabitCompletionRepository habitCompletionRepository;
-    private final StreakEngine streakEngine;
+    private final StreakService streakService;
 
     public HabitResponse createHabit(CreateHabitRequest request, Long userId) {
         var user = userRepository.findById(userId).orElse(null);
@@ -81,8 +81,8 @@ public class HabitService {
         }
         var completions = habitCompletionRepository.findByHabit(habit);
 
-        int currentStreak = streakEngine.calculateCurrentStreak(completions, habit.getFrequency());
-        int longestStreak = streakEngine.calculateLongestStreak(completions, habit.getFrequency());
+        int currentStreak = streakService.calculateCurrentStreak(completions, habit.getFrequency());
+        int longestStreak = streakService.calculateLongestStreak(completions, habit.getFrequency());
 
         return new StreakResponse(currentStreak, longestStreak);
     }

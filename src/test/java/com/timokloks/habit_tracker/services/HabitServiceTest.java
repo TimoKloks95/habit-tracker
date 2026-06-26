@@ -42,7 +42,7 @@ class HabitServiceTest {
     private HabitCompletionRepository habitCompletionRepository;
 
     @Mock
-    private StreakEngine streakEngine;
+    private StreakService streakService;
 
     @InjectMocks
     private HabitService habitService;
@@ -241,10 +241,10 @@ class HabitServiceTest {
         when(habitCompletionRepository.findByHabit(habit))
             .thenReturn(completions);
 
-        when(streakEngine.calculateCurrentStreak(completions, Frequency.DAILY))
+        when(streakService.calculateCurrentStreak(completions, Frequency.DAILY))
             .thenReturn(currentStreak);
 
-        when(streakEngine.calculateLongestStreak(completions, Frequency.DAILY))
+        when(streakService.calculateLongestStreak(completions, Frequency.DAILY))
             .thenReturn(longestStreak);
 
         StreakResponse actual = habitService.getStreak(habitId);
