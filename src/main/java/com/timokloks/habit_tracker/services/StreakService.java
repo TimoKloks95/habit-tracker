@@ -24,7 +24,7 @@ public class StreakService {
     private final WeeklyStreakStrategy weekly;
     private final MonthlyStreakStrategy monthly;
 
-    public StreakStrategy getStreakStrategy(Frequency frequency) {
+    private StreakStrategy getStreakStrategy(Frequency frequency) {
         return switch (frequency) {
             case DAILY -> daily;
             case WEEKLY -> weekly;
@@ -32,7 +32,7 @@ public class StreakService {
         };
     }
 
-    public int calculateCurrentStreak(List<HabitCompletion> completions, Frequency frequency) {getStreakStrategy(frequency);
+    public int calculateCurrentStreak(List<HabitCompletion> completions, Frequency frequency) {
         return getStreakStrategy(frequency).calculateCurrentStreak(completions);
     }
 
