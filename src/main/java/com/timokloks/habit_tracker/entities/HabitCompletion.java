@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "habit_completions")
 public class HabitCompletion {
+    public HabitCompletion(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
