@@ -10,11 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiPredicate;
 
-import static net.bytebuddy.matcher.ElementMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -34,14 +31,14 @@ class DailyStreakStrategyTest {
     // ---------------------------------------
 
     @Test
-    void currentStreakForEmptyList() {
+    void currentDailyStreakForEmptyList() {
         List<HabitCompletion> completions = List.of();
         int result = dailyStreakStrategy.calculateCurrentStreak(completions);
         assertEquals(0, result);
     }
 
     @Test
-    void currentStreakForThreeDaysInARowStartingFromToday() {
+    void currentDailyStreakForThreeDaysInARowStartingFromToday() {
         LocalDateTime completedAt = LocalDateTime.now();
         List<HabitCompletion> completions = List.of(new HabitCompletion(completedAt),
                 new HabitCompletion(completedAt.minusDays(1)),
@@ -52,7 +49,7 @@ class DailyStreakStrategyTest {
     }
 
     @Test
-    void currentStreakForTodayNotCompleted() {
+    void currentDailyStreakForTodayNotCompleted() {
         LocalDateTime completedAt = LocalDateTime.now();
         List<HabitCompletion> completions = List.of(new HabitCompletion(completedAt.minusDays(1)),
                 new HabitCompletion(completedAt.minusDays(2)));
@@ -62,7 +59,7 @@ class DailyStreakStrategyTest {
     }
 
     @Test
-    void currentStreakStartingTodayWithGap() {
+    void currentDailyStreakStartingTodayWithGap() {
         LocalDateTime completedAt = LocalDateTime.now();
         List<HabitCompletion> completions = List.of(new HabitCompletion(completedAt),
                 new HabitCompletion(completedAt.minusDays(1)),
@@ -77,7 +74,7 @@ class DailyStreakStrategyTest {
     // ---------------------------------------
 
     @Test
-    void longestStreakWithHappyPath() {
+    void longestDailyStreakWithHappyPath() {
         LocalDateTime firstDate = LocalDateTime.of(2026, 1, 1, 1, 1);
         LocalDateTime secondDate = LocalDateTime.of(2026, 1, 2, 1, 2);
         LocalDateTime thirdDate = LocalDateTime.of(2026, 1, 3, 1, 2);
